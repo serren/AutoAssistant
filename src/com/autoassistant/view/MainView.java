@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,7 +33,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 
-import com.autoassistant.controller.ViewController;
 import com.autoassistant.model.AutoAssistant;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.Entity;
@@ -378,8 +378,7 @@ public class MainView implements Runnable {
 		addExpenseAction.setEnabled(enabledFlag);
 
 		// check expenses actions
-		enabledFlag = (cbxExpenseCategories.getItemCount() != 0 && tblExpenses.getRowCount() != 0 && tblExpenses
-				.getSelectedRow() != -1);
+		enabledFlag = (cbxExpenseCategories.getItemCount() != 0 && tblExpenses.getRowCount() != 0 && tblExpenses.getSelectedRow() != -1);
 
 		editExpenseAction.setEnabled(enabledFlag);
 		removeExpenseAction.setEnabled(enabledFlag);
@@ -476,48 +475,35 @@ public class MainView implements Runnable {
 	private class EntityAction extends AbstractAction {
 
 		/*
-		 * public AddCarAction(String text, String desc, Integer mnemonic,
-		 * ImageIcon icon) { super(text, icon); putValue(SHORT_DESCRIPTION,
-		 * desc); putValue(MNEMONIC_KEY, mnemonic); }
+		 * public AddCarAction(String text, String desc, Integer mnemonic, ImageIcon icon) { 
+		 *  super(text, icon); 
+		 *  putValue(SHORT_DESCRIPTION, desc);
+		 *  putValue(MNEMONIC_KEY, mnemonic); 
+		 * }
 		 */
+
 		private String objectType;
 
-		public EntityAction(String text, String objectType) {
-			super(text);
+		public EntityAction(String actionName, String objectType) {
+			super(actionName);
 			this.objectType = objectType;
 		}
-
+		
+		@Override
 		public void actionPerformed(ActionEvent e) {
-			Object src = e.getSource();
-			try {
-				String actionCommand = ((AbstractButton) src).getActionCommand().toUpperCase();
-				processAction(ActionType.valueOf(actionCommand));
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			String actionCommand = ((AbstractButton) e.getSource()).getActionCommand().toUpperCase();
+			processAction(ActionType.valueOf(actionCommand));
 		}
 
 		private void processAction(ActionType actionType) {
-			try {
-				Entity entity = getEntityForView(actionType, objectType);
-
-				if (entity != null) {
-					try {
-						ViewController controller = new ViewController(entity, actionType, ViewFactory.getView(
-								actionType, entity));
-						actionType = controller.start(frmAutoAssistant);
-
-						// check the real action type
-						if (actionType != ActionType.CANCEL) {
-							applyChanges(entity, actionType);
-						}
-
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
+			Entity entity = getEntityForView(actionType, objectType);
+			if (entity != null) {
+				String caption = actionType.columnName() + " " + entity.getObjectType();
+				CustomDialog dialog = new CustomDialog(frmAutoAssistant, caption, ViewFactory.getView(actionType, entity));
+				if (dialog.show() == JOptionPane.OK_OPTION) {
+					// return real action type
+					applyChanges(entity, actionType);
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
 			}
 		}
 

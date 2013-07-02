@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.autoassistant.db.DataProvider;
 import com.autoassistant.db.DataProviderFactory;
+import com.autoassistant.model.AutoAssistant;
 import com.autoassistant.model.AutoAssistantImpl;
 import com.autoassistant.view.MainView;
 
@@ -36,7 +37,7 @@ public class Loader {
 			String dataStorageType = prop.getProperty("DataStorageType", "hibernate_mssql.cfg.xml");
 			log.info("DataStorageType is set to " + dataStorageType);
 			DataProvider dataProvider = DataProviderFactory.getDataProvider(dataStorageType);		
-			AutoAssistantImpl autoAssistant = new AutoAssistantImpl(dataProvider);		
+			AutoAssistant autoAssistant = new AutoAssistantImpl(dataProvider);		
 			EventQueue.invokeLater(new MainView(autoAssistant));
 
 		} catch (IOException ex) {
