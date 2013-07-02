@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Mar 18, 2013 2:08:33 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="com.autoassistant.model.Car" table="auto">
+		<id name="id" type="int" unsaved-value="0">
+			<column name="ID" not-null="true" />
+			<generator class="identity" />
+		</id>
+		<property generated="never" lazy="false" name="name"
+			not-null="true" type="java.lang.String">
+			<column name="NAME" />
+		</property>
+		<property generated="never" lazy="false" name="comment"
+			type="java.lang.String">
+			<column name="COMMENT" />
+		</property>
+		<set cascade="all" lazy="true" name="expenseCategories" order-by="NAME"
+			sort="unsorted" table="categories">
+			<key>
+				<column name="AUTOID" not-null="true" />
+			</key>
+			<one-to-many class="com.autoassistant.model.ExpenseCategory" />
+		</set>
+	</class>
+</hibernate-mapping>
