@@ -104,14 +104,6 @@ public class Expense extends Entity {
 	}
 
 	/**
-	 * Checks if all mandatory fields are filled
-	 */
-	@Override
-	public boolean isDataValid() {
-		return (getRace() != 0 && getAmount() != 0 && getExpenseDate() != null);
-	}
-
-	/**
 	 * Returns object type
 	 */
 	@Override

@@ -30,12 +30,10 @@ public class CustomDialog {
 				if (dialog.isVisible() && JOptionPane.VALUE_PROPERTY.equals(e.getPropertyName())) {
 					// if OK button was pressed
 					if (((Integer) optionPane.getValue()) == 0) {
-
-						// if input data is not valid don't close dialog
-						if (view.isDataNotValid()) {
+						if (!view.isValidData()) {
 							return;
-						}
-
+						}	
+						view.updateObject();
 						response = JOptionPane.OK_OPTION;
 					}
 

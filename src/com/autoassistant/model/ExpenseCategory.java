@@ -102,14 +102,6 @@ public class ExpenseCategory extends Entity implements Comparable<ExpenseCategor
 	}
 
 	/**
-	 * Checks if all mandatory fields are filled
-	 */
-	@Override
-	public boolean isDataValid() {
-		return (getName().length() != 0);
-	}
-
-	/**
 	 * Returns object type
 	 */
 	@Override

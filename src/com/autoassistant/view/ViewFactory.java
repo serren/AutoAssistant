@@ -16,15 +16,15 @@ public class ViewFactory {
 		}
 
 		if (Car.class.isInstance(object)) {
-			return new CarView((Car) object);
+			return new CarView(object);
 		}
 
 		if (ExpenseCategory.class.isInstance(object)) {
-			return new ExpenseCategoryView((ExpenseCategory) object);
+			return new ExpenseCategoryView(object);
 		}
 
 		if (Expense.class.isInstance(object)) {
-			return new ExpenseView((Expense) object);
+			return new ExpenseView(object);
 		}
 
 		return null;
