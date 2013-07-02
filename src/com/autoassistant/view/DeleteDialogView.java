@@ -20,10 +20,9 @@ public class DeleteDialogView extends View {
 
 		this.setPreferredSize(new Dimension(385, 60));
 	}
-
+	
 	@Override
-	protected boolean isDataNotValid() {
+	public boolean isDataNotValid() {
 		return false;
-	}
-
+	}	
 }

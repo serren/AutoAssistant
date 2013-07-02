@@ -85,13 +85,4 @@ public class ExpenseView extends View {
 
 		this.setPreferredSize(new Dimension(380, 140));
 	}
-
-	/**
-	 * Method checks if all mandatory fields are filled
-	 * 
-	 */
-	@Override
-	public boolean isDataNotValid() {
-		return !entity.isDataValid();
-	}
 }

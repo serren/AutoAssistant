@@ -59,13 +59,4 @@ public class CarView extends View {
 		
 		this.setPreferredSize(new Dimension(385,140));
 	}
-
-	/**
-	 * Checks if all mandatory fields are filled
-	 */
-	@Override
-	public boolean isDataNotValid() {		
-		return !entity.isDataValid();
-	}
-
 }

@@ -8,9 +8,6 @@ import com.autoassistant.util.ActionType;
 
 public class ViewFactory {
 
-	private ViewFactory() {
-	}
-
 	public static View getView(ActionType actionType, Entity object) {
 
 		// for removing object special view is used
