@@ -1,46 +1,38 @@
 package com.autoassistant.model;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Class implements expense category object
  */
-public class ExpenseCategory extends Entity implements Comparable<ExpenseCategory> {
+public class ExpenseCategory implements Entity, Comparable<ExpenseCategory> {
 
 	private String name;
 	private int id;
 	private int autoId;
-	Set<Expense> expenses = new HashSet<Expense>();
+	Set<Expense> expenses;
 
 	/**
-	 * Default constructor
+	 * Creates new expense category for hibernate
 	 */
-	public ExpenseCategory() {
-		expenses = new HashSet<Expense>();
-	}
-
+	public ExpenseCategory() {}
+	
 	/**
 	 * Creates new expense category with empty expenses list
 	 * 
 	 * @param internal
 	 *            category Id
-	 * @param internal
-	 *            auto Id
 	 * @param name
 	 */
-	public ExpenseCategory(int id, int autoId, String name) {
-
-		this();
-
-		setId(id);
-		setAutoId(autoId);
-		setName(name);
+	public ExpenseCategory(int id, String name) {
+		expenses = new HashSet<Expense>();
+		this.id = id;
+		this.name = name;		
 	}
 
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	public void setName(String name) {
@@ -48,7 +40,7 @@ public class ExpenseCategory extends Entity implements Comparable<ExpenseCategor
 	}
 
 	public int getId() {
-		return this.id;
+		return id;
 	}
 
 	public void setId(int id) {
@@ -56,7 +48,7 @@ public class ExpenseCategory extends Entity implements Comparable<ExpenseCategor
 	}
 
 	public int getAutoId() {
-		return this.autoId;
+		return autoId;
 	}
 
 	public void setAutoId(int autoId) {
@@ -77,19 +69,14 @@ public class ExpenseCategory extends Entity implements Comparable<ExpenseCategor
 	}
 
 	/**
-	 * Creates new expense for category
-	 */
-	public Expense newExpense() {
-		return new Expense(0, getId(), getAutoId(), 0, Calendar.getInstance().getTime(), 0d, "");
-	}
-
-	/**
 	 * Adds new expense to expense list
 	 * 
 	 * @param expense
 	 */
 	public void addExpense(Expense expense) {
-		this.expenses.add(expense);
+		expense.setAutoId(autoId);
+		expense.setCategoryId(id);
+		expenses.add(expense);		
 	}
 
 	/**
@@ -98,15 +85,7 @@ public class ExpenseCategory extends Entity implements Comparable<ExpenseCategor
 	 * @param expense
 	 */
 	public void removeExpense(Expense expense) {
-		this.expenses.remove(expense);
-	}
-
-	/**
-	 * Returns object type
-	 */
-	@Override
-	public String getObjectType() {
-		return "Expense Category";
+		expenses.remove(expense);
 	}
 
 	@Override

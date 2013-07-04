@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -11,12 +12,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -57,17 +61,19 @@ public class MainView implements Runnable {
 	private JLabel lblStatus;
 
 	// actions
-	private EntityAction addCarAction;
-	private EntityAction editCarAction;
-	private EntityAction removeCarAction;
+	private boolean resultLastAction = false;
 
-	private EntityAction addCategoryAction;
-	private EntityAction editCategoryAction;
-	private EntityAction removeCategoryAction;
+	private AddCarAction addCarAction;
+	private EditCarAction editCarAction;
+	private RemoveCarAction removeCarAction;
 
-	private EntityAction addExpenseAction;
-	private EntityAction editExpenseAction;
-	private EntityAction removeExpenseAction;
+	private AddCategoryAction addCategoryAction;
+	private EditCategoryAction editCategoryAction;
+	private RemoveCategoryAction removeCategoryAction;
+
+	private AddExpenseAction addExpenseAction;
+	private EditExpenseAction editExpenseAction;
+	private RemoveExpenseAction removeExpenseAction;
 
 	/**
 	 * Creates the main view.
@@ -200,7 +206,7 @@ public class MainView implements Runnable {
 				// double click on expense grid opens expense for editing
 				if (e.getClickCount() == 2) {
 					try {
-						editExpenseAction.processAction(ActionType.EDIT);
+						editExpenseAction.actionPerformed(null);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -252,30 +258,24 @@ public class MainView implements Runnable {
 		frmAutoAssistant.setJMenuBar(menuBar);
 
 		// actions
-		addCarAction = new EntityAction("Add", "Car");
-		editCarAction = new EntityAction("Edit", "Car");
-		removeCarAction = new EntityAction("Remove", "Car");
-		addCategoryAction = new EntityAction("Add", "Expense Category");
-		editCategoryAction = new EntityAction("Edit", "Expense Category");
-		removeCategoryAction = new EntityAction("Remove", "Expense Category");
-		addExpenseAction = new EntityAction("Add", "Expense");
-		editExpenseAction = new EntityAction("Edit", "Expense");
-		removeExpenseAction = new EntityAction("Remove", "Expense");
 
 		JMenu mnCar = new JMenu("Car");
 		menuBar.add(mnCar);
 
 		JMenuItem mntmAddCar = new JMenuItem("Add");
+		addCarAction = new AddCarAction();
 		mntmAddCar.setAction(addCarAction);
 		mntmAddCar.setActionCommand("Add");
 		mnCar.add(mntmAddCar);
 
 		JMenuItem mntmEditCar = new JMenuItem("Edit");
+		editCarAction = new EditCarAction();
 		mntmEditCar.setAction(editCarAction);
 		mntmEditCar.setActionCommand("Edit");
 		mnCar.add(mntmEditCar);
 
 		JMenuItem mntmRemoveCar = new JMenuItem("Remove");
+		removeCarAction = new RemoveCarAction();
 		mntmRemoveCar.setAction(removeCarAction);
 		mntmRemoveCar.setActionCommand("Remove");
 		mnCar.add(mntmRemoveCar);
@@ -284,18 +284,19 @@ public class MainView implements Runnable {
 		menuBar.add(mnCategory);
 
 		JMenuItem mntmAddCategory = new JMenuItem("Add");
+		addCategoryAction = new AddCategoryAction();
 		mntmAddCategory.setAction(addCategoryAction);
 		mntmAddCategory.setActionCommand("Add");
 		mnCategory.add(mntmAddCategory);
 
 		JMenuItem mntmEditCategory = new JMenuItem("Edit");
-
+		editCategoryAction = new EditCategoryAction();
 		mntmEditCategory.setAction(editCategoryAction);
 		mntmEditCategory.setActionCommand("Edit");
 		mnCategory.add(mntmEditCategory);
 
 		JMenuItem mntmRemoveCategory = new JMenuItem("Remove");
-
+		removeCategoryAction = new RemoveCategoryAction();
 		mntmRemoveCategory.setAction(removeCategoryAction);
 		mntmRemoveCategory.setActionCommand("Remove");
 		mnCategory.add(mntmRemoveCategory);
@@ -304,16 +305,19 @@ public class MainView implements Runnable {
 		menuBar.add(mnExpense);
 
 		JMenuItem mntmAddExpense = new JMenuItem("Add");
+		addExpenseAction = new AddExpenseAction();
 		mntmAddExpense.setAction(addExpenseAction);
 		mntmAddExpense.setActionCommand("Add");
 		mnExpense.add(mntmAddExpense);
 
 		JMenuItem mntmEditExpense = new JMenuItem("Edit");
+		editExpenseAction = new EditExpenseAction();
 		mntmEditExpense.setAction(editExpenseAction);
 		mntmEditExpense.setActionCommand("Edit");
 		mnExpense.add(mntmEditExpense);
 
 		JMenuItem mntmRemoveExpense = new JMenuItem("Remove");
+		removeExpenseAction = new RemoveExpenseAction();
 		mntmRemoveExpense.setAction(removeExpenseAction);
 		mntmRemoveExpense.setActionCommand("Remove");
 		mnExpense.add(mntmRemoveExpense);
@@ -384,128 +388,154 @@ public class MainView implements Runnable {
 		removeExpenseAction.setEnabled(enabledFlag);
 	}
 
-	/**
-	 * Applies changes to specified entity
-	 * 
-	 * @param entity
-	 * @param actionType
-	 */
-	private void applyChanges(Entity entity, ActionType actionType) {
+	private void processAction(Entity entity, ActionType actionType) {
+		resultLastAction = false;
+		if (entity != null) {
+			final JDialog dialog = new JDialog(frmAutoAssistant, actionType.columnName(), true);
+			final View view = ViewFactory.getView(actionType, entity);
+			final JOptionPane optionPane = new JOptionPane(view, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
-		String objectType = entity.getObjectType();
+			dialog.setContentPane(optionPane);
+			dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+			dialog.setResizable(false);
+			dialog.setLocationRelativeTo(frmAutoAssistant);
+			dialog.setType(Type.UTILITY);
+			dialog.pack();
 
-		if ("Car".equals(objectType)) {
-			if (actionType == ActionType.REMOVE) {
-				autoAssistant.remove(entity);
-			}
-			if (actionType == ActionType.ADD) {
-				currentCar = (Car) entity;
-				autoAssistant.save(currentCar);
-			}
-			showCars();
-		}
+			optionPane.addPropertyChangeListener(new PropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent e) {
+					if (dialog.isVisible() && JOptionPane.VALUE_PROPERTY.equals(e.getPropertyName())) {
+						// if OK button was pressed
+						if (((Integer) optionPane.getValue()) == 0) {
+							if (!view.isValidData()) {
+								return;
+							}
+							view.updateObject();
+							resultLastAction = true;
+						}
 
-		if ("Expense Category".equals(objectType)) {
-			if (actionType == ActionType.REMOVE) {
-				currentCar.removeExpenseCategory((ExpenseCategory) entity);
-			} else {
-				currentExpenseCategory = (ExpenseCategory) entity;
-				currentCar.addExpenseCategory((ExpenseCategory) entity);
-			}
-			autoAssistant.save(currentCar);
-			showExpenseCategories(currentCar);
-		}
-
-		if ("Expense".equals(objectType)) {
-			if (actionType == ActionType.REMOVE) {
-				currentExpenseCategory.removeExpense((Expense) entity);
-			} else {
-				currentExpense = (Expense) entity;
-				currentExpenseCategory.addExpense((Expense) entity);
-			}
-			autoAssistant.save(currentCar);
-			showExpenses(currentExpenseCategory);
+						dialog.setVisible(false);
+					}
+				}
+			});
+			dialog.setVisible(true);
 		}
 	}
 
-	/**
-	 * Returns object for view. It can be current object (for edit and remove
-	 * action) or new
-	 * 
-	 * @param actionType
-	 * @param objectType
-	 * 
-	 * @return Object
-	 */
-	private Entity getEntityForView(ActionType actionType, String objectType) {
-
-		Entity entity = null;
-
-		if ("Car".equals(objectType)) {
-			if (actionType == ActionType.ADD) {
-				entity = Car.newCar();
-			} else {
-				entity = currentCar;
-			}
-		}
-
-		if ("Expense Category".equals(objectType)) {
-			if (actionType == ActionType.ADD) {
-				entity = currentCar.newExpenseCategory();
-			} else {
-				entity = currentExpenseCategory;
-			}
-		}
-
-		if ("Expense".equals(objectType)) {
-			if (actionType == ActionType.ADD) {
-				entity = currentExpenseCategory.newExpense();
-			} else {
-				entity = currentExpense;
-			}
-		}
-
-		return entity;
-	}
-
-	/**
-	 * Class implements actions can be performed on object
-	 */
 	@SuppressWarnings("serial")
-	private class EntityAction extends AbstractAction {
-
-		/*
-		 * public AddCarAction(String text, String desc, Integer mnemonic, ImageIcon icon) { 
-		 *  super(text, icon); 
-		 *  putValue(SHORT_DESCRIPTION, desc);
-		 *  putValue(MNEMONIC_KEY, mnemonic); 
-		 * }
-		 */
-
-		private String objectType;
-
-		public EntityAction(String actionName, String objectType) {
-			super(actionName);
-			this.objectType = objectType;
-		}
-		
+	private class EditCategoryAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			String actionCommand = ((AbstractButton) e.getSource()).getActionCommand().toUpperCase();
-			processAction(ActionType.valueOf(actionCommand));
-		}
-
-		private void processAction(ActionType actionType) {
-			Entity entity = getEntityForView(actionType, objectType);
-			if (entity != null) {
-				String caption = actionType.columnName() + " " + entity.getObjectType();
-				CustomDialog dialog = new CustomDialog(frmAutoAssistant, caption, ViewFactory.getView(actionType, entity));
-				if (dialog.show() == JOptionPane.OK_OPTION) {
-					// return real action type
-					applyChanges(entity, actionType);
-				}
+			processAction(currentExpenseCategory, ActionType.EDIT);
+			if (resultLastAction) {
+				autoAssistant.save(currentCar);
+				showExpenseCategories(currentCar);
 			}
 		}
+	}
 
+	@SuppressWarnings("serial")
+	private class AddCategoryAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			final ExpenseCategory expenceCategory = new ExpenseCategory(0, "");
+			processAction(expenceCategory, ActionType.ADD);
+			if (resultLastAction) {
+				currentCar.addExpenseCategory(expenceCategory);
+				autoAssistant.save(currentCar);
+				showExpenseCategories(currentCar);
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class RemoveCategoryAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			processAction(currentExpenseCategory, ActionType.REMOVE);
+			if (resultLastAction) {
+				currentCar.removeExpenseCategory(currentExpenseCategory);
+				autoAssistant.save(currentCar);
+				showExpenseCategories(currentCar);
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class AddCarAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			final Car car = new Car(0, "", "");
+			processAction(car, ActionType.ADD);
+			if (resultLastAction) {
+				autoAssistant.save(car);
+				showCars();
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class EditCarAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			processAction(currentCar, ActionType.EDIT);
+			if (resultLastAction) {
+				autoAssistant.save(currentCar);
+				showCars();
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class RemoveCarAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			processAction(currentCar, ActionType.REMOVE);
+			if (resultLastAction) {
+				autoAssistant.remove(currentCar);
+				showCars();
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class AddExpenseAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			final Expense expense = new Expense(0, 0, Calendar.getInstance().getTime(), 0d, "");
+			processAction(expense, ActionType.ADD);
+			if (resultLastAction) {
+				currentExpenseCategory.addExpense(expense);
+				autoAssistant.save(currentCar);
+				showExpenses(currentExpenseCategory);
+
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class EditExpenseAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			processAction(currentExpense, ActionType.EDIT);
+			if (resultLastAction) {
+				autoAssistant.save(currentCar);
+				showExpenses(currentExpenseCategory);
+
+			}
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private class RemoveExpenseAction extends AbstractAction {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			processAction(currentExpense, ActionType.REMOVE);
+			if (resultLastAction) {
+				currentExpenseCategory.removeExpense(currentExpense);
+				autoAssistant.save(currentCar);
+				showExpenses(currentExpenseCategory);
+			}
+		}
 	}
 }

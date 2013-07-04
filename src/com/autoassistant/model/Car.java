@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Class implements car object
  */
-public class Car extends Entity implements Comparable<Car> {
+public class Car implements Entity, Comparable<Car> {
 
 	private int id;
 	private String name;
@@ -30,10 +30,9 @@ public class Car extends Entity implements Comparable<Car> {
 	};
 
 	/**
-	 * Create new empty car object
+	 * Create new empty car object for hibernate
 	 */
 	public Car() {
-		expenseCategories = new HashSet<ExpenseCategory>();
 	}
 
 	/**
@@ -43,12 +42,11 @@ public class Car extends Entity implements Comparable<Car> {
 	 * @param Name
 	 * @param Comment
 	 */
-	public Car(int carId, String carName, String carComment) {
-
-		this();
-		setId(carId);
-		setName(carName);
-		setComment(carComment);
+	public Car(int id, String name, String comment) {
+		expenseCategories = new HashSet<ExpenseCategory>();
+		this.id = id;
+		this.name = name;
+		this.comment = comment;
 	}
 
 	public String getName() {
@@ -89,26 +87,13 @@ public class Car extends Entity implements Comparable<Car> {
 	}
 
 	/**
-	 * Creates new car with default parameters
-	 */
-	public static Car newCar() {
-		return new Car(0, "", "");
-	}
-
-	/**
-	 * Creates new expense category for car
-	 */
-	public ExpenseCategory newExpenseCategory() {
-		return new ExpenseCategory(0, getId(), "");
-	}
-
-	/**
 	 * Adds new expense category
 	 * 
 	 * @param expenseCategory
 	 */
 	public void addExpenseCategory(ExpenseCategory expenseCategory) {
-		this.expenseCategories.add(expenseCategory);
+		expenseCategory.setAutoId(id);
+		expenseCategories.add(expenseCategory);
 	}
 
 	/**
@@ -117,15 +102,7 @@ public class Car extends Entity implements Comparable<Car> {
 	 * @param expenseCategory
 	 */
 	public void removeExpenseCategory(ExpenseCategory expenseCategory) {
-		this.expenseCategories.remove(expenseCategory);
-	}
-
-	/**
-	 * Returns object type
-	 */
-	@Override
-	public String getObjectType() {
-		return "Car";
+		expenseCategories.remove(expenseCategory);
 	}
 
 	@Override

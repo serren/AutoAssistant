@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Class implements expense object
  */
-public class Expense extends Entity {
+public class Expense implements Entity {
 
 	private Date expenseDate;
 	private int race;
@@ -15,30 +15,39 @@ public class Expense extends Entity {
 	private int autoId;
 	private int id;
 
-	public Expense() {
-
-	}
+	public Expense() {}
 
 	/**
 	 * Creates new instance of Expense
 	 * 
 	 * @param id
-	 * @param categoryId
-	 * @param autoId
 	 * @param race
 	 * @param expenseDate
 	 * @param amount
 	 * @param text
 	 */
-	public Expense(int id, int categoryId, int autoId, int race, Date expenseDate, double amount, String text) {
-		this();
-		setId(id);
-		setCategoryId(categoryId);
-		setAutoId(autoId);
-		setRace(race);
-		setExpenseDate(expenseDate);
-		setAmount(amount);
-		setText(text);
+	public Expense(int id, int race, Date expenseDate, double amount, String text) {
+		this.id = id;
+		this.race = race;
+		this.expenseDate = expenseDate;
+		this.amount = amount;
+		this.text = text;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getCategoryId() {
+		return categoryId;
+	}
+
+	public int getAutoId() {
+		return autoId;
 	}
 
 	public Date getExpenseDate() {
@@ -73,41 +82,17 @@ public class Expense extends Entity {
 		this.text = text;
 	}
 
-	public int getCategoryId() {
-		return categoryId;
-	}
-
 	public void setCategoryId(int category) {
 		this.categoryId = category;
-	}
-
-	public int getAutoId() {
-		return autoId;
 	}
 
 	public void setAutoId(int autoId) {
 		this.autoId = autoId;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	@Override
 	public String toString() {
 		return "Date: " + getExpenseDate().toString() + "\nRace: " + getRace() + "\nAmount: " + getAmount()
 				+ "\nComment: " + getText();
-	}
-
-	/**
-	 * Returns object type
-	 */
-	@Override
-	public String getObjectType() {
-		return "Expense";
 	}
 }
