@@ -14,21 +14,6 @@ public class Car implements Entity, Comparable<Car> {
 	private String comment;
 	private Set<ExpenseCategory> expenseCategories;
 
-	public static Comparator<Car> nameComparator = new Comparator<Car>() {
-
-		public int compare(Car car1, Car car2) {
-
-			String carName1 = car1.getName().toUpperCase();
-			String carName2 = car2.getName().toUpperCase();
-
-			// ascending order
-			return carName1.compareTo(carName2);
-
-			// descending order
-			// return carName2.compareTo(carName1);
-		}
-	};
-
 	/**
 	 * Create new empty car object for hibernate
 	 */
@@ -109,4 +94,19 @@ public class Car implements Entity, Comparable<Car> {
 	public int compareTo(Car car) {
 		return getId() - car.getId();
 	}
+	
+	public static Comparator<Car> nameComparator = new Comparator<Car>() {
+
+		public int compare(Car car1, Car car2) {
+
+			String carName1 = car1.getName().toUpperCase();
+			String carName2 = car2.getName().toUpperCase();
+
+			// ascending order
+			return carName1.compareTo(carName2);
+
+			// descending order
+			// return carName2.compareTo(carName1);
+		}
+	};
 }

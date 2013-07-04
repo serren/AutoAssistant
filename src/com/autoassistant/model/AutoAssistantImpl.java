@@ -18,16 +18,6 @@ public class AutoAssistantImpl implements AutoAssistant {
 	}
 
 	@Override
-	public void loadExpenseCategoriesToCar(Car car) {
-		car.setExpenseCategories(dataProvider.getExpenseCategories(car));
-	}
-
-	@Override
-	public void loadExpensesToCategory(ExpenseCategory expenseCategory) {
-		expenseCategory.setExpenses(dataProvider.getExpenses(expenseCategory));
-	}
-
-	@Override
 	public void add(Entity entity) {
 		dataProvider.add(entity);
 	}

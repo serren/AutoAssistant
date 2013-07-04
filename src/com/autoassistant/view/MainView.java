@@ -205,11 +205,7 @@ public class MainView implements Runnable {
 			public void mouseClicked(MouseEvent e) {
 				// double click on expense grid opens expense for editing
 				if (e.getClickCount() == 2) {
-					try {
-						editExpenseAction.actionPerformed(null);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
+					editExpenseAction.actionPerformed(null);
 				} else {
 					checkActions();
 				}
@@ -256,8 +252,6 @@ public class MainView implements Runnable {
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setMargin(new Insets(10, 10, 10, 10));
 		frmAutoAssistant.setJMenuBar(menuBar);
-
-		// actions
 
 		JMenu mnCar = new JMenu("Car");
 		menuBar.add(mnCar);
@@ -367,23 +361,19 @@ public class MainView implements Runnable {
 	 * Checks if actions are available or not
 	 */
 	private void checkActions() {
-
-		boolean enabledFlag = (cbxCars.getItemCount() != 0);
-
 		// check car actions
+		boolean enabledFlag = (cbxCars.getItemCount() != 0);
 		editCarAction.setEnabled(enabledFlag);
 		removeCarAction.setEnabled(enabledFlag);
 
 		// check categories actions
 		enabledFlag = (cbxExpenseCategories.getItemCount() != 0);
-
 		editCategoryAction.setEnabled(enabledFlag);
 		removeCategoryAction.setEnabled(enabledFlag);
 		addExpenseAction.setEnabled(enabledFlag);
 
 		// check expenses actions
 		enabledFlag = (cbxExpenseCategories.getItemCount() != 0 && tblExpenses.getRowCount() != 0 && tblExpenses.getSelectedRow() != -1);
-
 		editExpenseAction.setEnabled(enabledFlag);
 		removeExpenseAction.setEnabled(enabledFlag);
 	}
@@ -391,7 +381,7 @@ public class MainView implements Runnable {
 	private void processAction(Entity entity, ActionType actionType) {
 		resultLastAction = false;
 		if (entity != null) {
-			final JDialog dialog = new JDialog(frmAutoAssistant, actionType.columnName(), true);
+			final JDialog dialog = new JDialog(frmAutoAssistant, actionType.getName(), true);
 			final View view = ViewFactory.getView(actionType, entity);
 			final JOptionPane optionPane = new JOptionPane(view, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
@@ -502,7 +492,12 @@ public class MainView implements Runnable {
 	private class AddExpenseAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final Expense expense = new Expense(0, 0, Calendar.getInstance().getTime(), 0d, "");
+			final Expense expense = new Expense();
+			expense.setId(0);
+			expense.setRace(0);
+			expense.setExpenseDate(Calendar.getInstance().getTime());
+			expense.setAmount(0d);
+			expense.setText("");
 			processAction(expense, ActionType.ADD);
 			if (resultLastAction) {
 				currentExpenseCategory.addExpense(expense);

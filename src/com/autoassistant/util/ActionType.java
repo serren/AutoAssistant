@@ -6,13 +6,13 @@ public enum ActionType {
 	EDIT("Edit"),
     REMOVE("Remove");
 	
-    private final String columnName;
+    private final String name;
 	
-	ActionType(String columnName) {
-        this.columnName = columnName;
+	ActionType(String name) {
+        this.name = name;
     }
 	
-    public String columnName() {
-        return columnName;
+    public String getName() {
+        return name;
     }	
 }

@@ -7,32 +7,16 @@ import java.util.Date;
  */
 public class Expense implements Entity {
 
-	private Date expenseDate;
+	private int id;
 	private int race;
+	private Date expenseDate;	
 	private double amount;
 	private String text;
+	
 	private int categoryId;
 	private int autoId;
-	private int id;
 
 	public Expense() {}
-
-	/**
-	 * Creates new instance of Expense
-	 * 
-	 * @param id
-	 * @param race
-	 * @param expenseDate
-	 * @param amount
-	 * @param text
-	 */
-	public Expense(int id, int race, Date expenseDate, double amount, String text) {
-		this.id = id;
-		this.race = race;
-		this.expenseDate = expenseDate;
-		this.amount = amount;
-		this.text = text;
-	}
 
 	public int getId() {
 		return id;
@@ -46,10 +30,19 @@ public class Expense implements Entity {
 		return categoryId;
 	}
 
+	public void setCategoryId(int category) {
+		this.categoryId = category;
+	}
+
+	
 	public int getAutoId() {
 		return autoId;
 	}
 
+	public void setAutoId(int autoId) {
+		this.autoId = autoId;
+	}
+	
 	public Date getExpenseDate() {
 		return expenseDate;
 	}
@@ -80,14 +73,6 @@ public class Expense implements Entity {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-	public void setCategoryId(int category) {
-		this.categoryId = category;
-	}
-
-	public void setAutoId(int autoId) {
-		this.autoId = autoId;
 	}
 
 	@Override

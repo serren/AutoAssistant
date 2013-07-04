@@ -13,20 +13,6 @@ public interface AutoAssistant {
 	public Set<Car> getCars();
 	
 	/**
-	 * Loads expenses categories list for car
-	 * 
-	 * @param car
-	 */
-	void loadExpenseCategoriesToCar(Car car);
-	
-	/**
-	 * Loads expenses list for expense category
-	 * 
-	 * @param expenseCategory
-	 */
-	public void loadExpensesToCategory(ExpenseCategory expenseCategory);
-	
-	/**
 	 * Adds new object into DB
 	 */
 	public void add(Entity entity);
