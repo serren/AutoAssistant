@@ -15,7 +15,6 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -35,16 +34,12 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableModel;
 
 import com.autoassistant.model.AutoAssistant;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
-import com.autoassistant.util.ActionType;
-import com.autoassistant.util.ExpenseTable;
-import com.autoassistant.util.SortedComboBoxModel;
 
 public class MainView implements Runnable {
 
@@ -165,8 +160,8 @@ public class MainView implements Runnable {
 		});
 
 		GridBagConstraints gbc_cbxExpenseCategories = new GridBagConstraints();
-		gbc_cbxExpenseCategories.insets = new Insets(0, 0, 5, 0);
 		gbc_cbxExpenseCategories.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cbxExpenseCategories.insets = new Insets(0, 0, 5, 0);		
 		gbc_cbxExpenseCategories.gridx = 1;
 		gbc_cbxExpenseCategories.gridy = 1;
 		pnlMain.add(cbxExpenseCategories, gbc_cbxExpenseCategories);
@@ -213,16 +208,14 @@ public class MainView implements Runnable {
 		});
 		scrollPane.setViewportView(tblExpenses);
 
-		TableModel tableModel = new ExpenseTable(new HashSet<Expense>());
 		// binding the table to the model
-		tblExpenses.setModel(tableModel);
+		tblExpenses.setModel(new ExpenseTable());
 		tblExpenses.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lse) {
 				if (!lse.getValueIsAdjusting()) {
-					int selectedRow = tblExpenses.getSelectedRow();
+					final int selectedRow = tblExpenses.getSelectedRow();
 					if (selectedRow != -1) {
-						ExpenseTable tableModel = (ExpenseTable) tblExpenses.getModel();
-						currentExpense = (Expense) tableModel.getElement(selectedRow);
+						currentExpense = ((ExpenseTable) tblExpenses.getModel()).getElement(selectedRow);
 					} else {
 						currentExpense = null;
 					}
@@ -349,8 +342,9 @@ public class MainView implements Runnable {
 		if (expenseCategory != null) {
 			expenses = expenseCategory.getExpenses();
 		}
-		ExpenseTable tableModel = (ExpenseTable) tblExpenses.getModel();
-		tableModel.setElements(expenses);
+		
+		((ExpenseTable) tblExpenses.getModel()).setElements(expenses);
+		
 		tblExpenses.setAutoCreateRowSorter(true);
 		tblExpenses.getRowSorter().toggleSortOrder(0);
 		tblExpenses.updateUI();

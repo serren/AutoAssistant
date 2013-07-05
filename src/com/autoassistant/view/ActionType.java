@@ -1,4 +1,4 @@
-package com.autoassistant.util;
+package com.autoassistant.view;
 
 public enum ActionType { 
 	CANCEL("Cancel"),

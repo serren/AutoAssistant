@@ -4,7 +4,6 @@ import com.autoassistant.model.Car;
 import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
-import com.autoassistant.util.ActionType;
 
 public class ViewFactory {
 
