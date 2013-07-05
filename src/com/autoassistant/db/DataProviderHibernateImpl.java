@@ -3,12 +3,19 @@
  */
 package com.autoassistant.db;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 
+import com.autoassistant.loader.Loader;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
@@ -17,13 +24,14 @@ import com.autoassistant.model.ExpenseCategory;
  * Implements DB methods
  */
 public class DataProviderHibernateImpl implements DataProvider {
+	private static final Logger log = Logger.getLogger(DataProviderHibernateImpl.class);
 
 	private Session session = null;
 	private static DataProviderHibernateImpl instance;
-	
-	public static DataProviderHibernateImpl getInstance(String dataStorageType) {
+
+	public static DataProviderHibernateImpl getInstance() {
 		if (instance == null) {
-			instance = new DataProviderHibernateImpl(dataStorageType);
+			instance = new DataProviderHibernateImpl();
 		}
 		return instance;
 	}
@@ -31,12 +39,20 @@ public class DataProviderHibernateImpl implements DataProvider {
 	/**
 	 * Creates DB context to work with DB
 	 */
-	private DataProviderHibernateImpl(String dataStorageType) {
+	private DataProviderHibernateImpl() {
+		Properties prop = new Properties();
 		try {
-			session = HibernateHelper.getSessionFactory(dataStorageType).openSession();
-		} catch (Exception e) {
-			e.printStackTrace();
+			// load a properties file from class path, inside static method
+			prop.load(Loader.class.getClassLoader().getResourceAsStream("config.properties"));
+		} catch (IOException e) {
+			log.error(e);
 		}
+
+		String hibernateDbConf = prop.getProperty("DataStorageType", "hibernate_mssql.cfg.xml");
+		log.info("DataStorageType is set to " + hibernateDbConf);
+		Configuration configuration = new Configuration().configure(hibernateDbConf);
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties()).buildServiceRegistry();
+		session = configuration.buildSessionFactory(serviceRegistry).openSession();
 	}
 
 	/**
@@ -72,8 +88,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	@Override
 	public Set<ExpenseCategory> getExpenseCategories(Car car) {
 		Set<ExpenseCategory> expenseCategories = new HashSet<ExpenseCategory>();
-		expenseCategories.addAll(session.createQuery(
-				String.format("from ExpenseCategory where autoid = %s order by name", car.getId())).list());
+		expenseCategories.addAll(session.createQuery(String.format("from ExpenseCategory where autoid = %s order by name", car.getId())).list());
 		return expenseCategories;
 	}
 
@@ -84,8 +99,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	@Override
 	public Set<Expense> getExpenses(ExpenseCategory expenseCategory) {
 		Set<Expense> expenses = new HashSet<Expense>();
-		expenses.addAll(session.createQuery(
-				String.format("from Expense where categoryid = %s order by date", expenseCategory.getId())).list());
+		expenses.addAll(session.createQuery(String.format("from Expense where categoryid = %s order by date", expenseCategory.getId())).list());
 		return expenses;
 	}
 
