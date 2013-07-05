@@ -6,7 +6,6 @@ package com.autoassistant.db;
 import java.util.Set;
 
 import com.autoassistant.model.Car;
-import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
 
@@ -24,17 +23,17 @@ public interface DataProvider {
 	/**
 	 * Adds new object into DB
 	 */
-	public void add(Entity entity);
+	public void add(Object object);
 	
 	/**
 	 * Saves edited object into DB
 	 */
-	public void save(Entity entity);
+	public void save(Object object);
 	
 	/**
 	 * Removes object into DB
 	 */
-	public void remove(Entity entity);
+	public void remove(Object object);
 
 	/**
 	 * Loads car list from DB

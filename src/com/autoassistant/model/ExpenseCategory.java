@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * Class implements expense category object
  */
-public class ExpenseCategory implements Entity, Comparable<ExpenseCategory> {
+public class ExpenseCategory implements Comparable<ExpenseCategory> {
 
 	private String name;
 	private int id;

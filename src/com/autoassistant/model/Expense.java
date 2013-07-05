@@ -5,18 +5,19 @@ import java.util.Date;
 /**
  * Class implements expense object
  */
-public class Expense implements Entity {
+public class Expense {
 
 	private int id;
 	private int race;
-	private Date expenseDate;	
+	private Date expenseDate;
 	private double amount;
 	private String text;
-	
+
 	private int categoryId;
 	private int autoId;
 
-	public Expense() {}
+	public Expense() {
+	}
 
 	public int getId() {
 		return id;
@@ -25,7 +26,7 @@ public class Expense implements Entity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
+
 	public int getCategoryId() {
 		return categoryId;
 	}
@@ -34,7 +35,6 @@ public class Expense implements Entity {
 		this.categoryId = category;
 	}
 
-	
 	public int getAutoId() {
 		return autoId;
 	}
@@ -42,7 +42,7 @@ public class Expense implements Entity {
 	public void setAutoId(int autoId) {
 		this.autoId = autoId;
 	}
-	
+
 	public Date getExpenseDate() {
 		return expenseDate;
 	}
@@ -77,7 +77,6 @@ public class Expense implements Entity {
 
 	@Override
 	public String toString() {
-		return "Date: " + getExpenseDate().toString() + "\nRace: " + getRace() + "\nAmount: " + getAmount()
-				+ "\nComment: " + getText();
+		return "Date: " + getExpenseDate().toString() + "\nRace: " + getRace() + "\nAmount: " + getAmount() + "\nComment: " + getText();
 	}
 }

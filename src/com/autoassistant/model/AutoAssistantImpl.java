@@ -18,18 +18,18 @@ public class AutoAssistantImpl implements AutoAssistant {
 	}
 
 	@Override
-	public void add(Entity entity) {
-		dataProvider.add(entity);
+	public void add(Object object) {
+		dataProvider.add(object);
 	}
 
 	@Override
-	public void save(Entity entity) {
-		dataProvider.save(entity);
+	public void save(Object object) {
+		dataProvider.save(object);
 	}
 
 	@Override
-	public void remove(Entity entity) {
-		dataProvider.remove(entity);
+	public void remove(Object object) {
+		dataProvider.remove(object);
 	}
 
 	@Override

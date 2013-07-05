@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextField;
 
-import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.toedter.calendar.JDateChooser;
 
@@ -17,13 +16,13 @@ public class ExpenseView extends View {
 	private JTextField tfDescription;
 	private JDateChooser dateChooser;
 	
-	public ExpenseView(final Entity entity) {
-		super(entity);
+	public ExpenseView(final Object object) {
+		super(object);
 	}
 
 	@Override
 	protected void init() {
-		final Expense expense = (Expense) entity;
+		final Expense expense = (Expense) object;
 		addLabel("Date", 10, 3, 155, 21);
 		addLabel("Race", 169, 3, 103, 21);
 		addLabel("Amount", 276, 3, 94, 21);
@@ -37,7 +36,7 @@ public class ExpenseView extends View {
 
 	@Override
 	public void updateObject() {
-		final Expense expense = (Expense) entity;
+		final Expense expense = (Expense) object;
 		expense.setRace(Integer.parseInt(ftfRace.getText()));
 		expense.setAmount(Float.parseFloat(ftfAmount.getText()));
 		expense.setText(tfDescription.getText());

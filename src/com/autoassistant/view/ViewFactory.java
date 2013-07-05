@@ -1,13 +1,12 @@
 package com.autoassistant.view;
 
 import com.autoassistant.model.Car;
-import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
 
 public class ViewFactory {
 
-	public static View getView(ActionType actionType, Entity object) {
+	public static View getView(ActionType actionType, Object object) {
 
 		// for removing object special view is used
 		if (actionType == ActionType.REMOVE) {

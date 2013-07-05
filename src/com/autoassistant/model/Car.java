@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Class implements car object
  */
-public class Car implements Entity, Comparable<Car> {
+public class Car implements Comparable<Car> {
 
 	private int id;
 	private String name;

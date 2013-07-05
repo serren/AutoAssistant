@@ -7,16 +7,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.autoassistant.model.Entity;
 import com.toedter.calendar.JDateChooser;
 
 public abstract class View extends JPanel {
 
 	private static final long serialVersionUID = 6887907407216074041L;
-	protected final Entity entity;
+	protected final Object object;
 
-	public View(final Entity entity) {
-		this.entity = entity;
+	public View(final Object object) {
+		this.object = object;
 		setLayout(null);
 		init();
 	}

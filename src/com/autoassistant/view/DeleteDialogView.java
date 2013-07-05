@@ -2,17 +2,15 @@ package com.autoassistant.view;
 
 import java.awt.Dimension;
 
-import com.autoassistant.model.Entity;
-
 @SuppressWarnings("serial")
 public class DeleteDialogView extends View {
-	public DeleteDialogView(final Entity entity) {
-		super(entity);
+	public DeleteDialogView(final Object object) {
+		super(object);
 	}
 
 	@Override
 	protected void init() {
-		addLabel(entity.toString(), 0, 1, 384, 30);
+		addLabel(object.toString(), 0, 1, 384, 30);
 		setPreferredSize(new Dimension(385, 60));
 	}
 

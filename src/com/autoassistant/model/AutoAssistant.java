@@ -15,17 +15,17 @@ public interface AutoAssistant {
 	/**
 	 * Adds new object into DB
 	 */
-	public void add(Entity entity);
+	public void add(Object object);
 	
 	/**
 	 * Saves edited object into DB
 	 */
-	public void save(Entity entity);
+	public void save(Object object);
 	
 	/**
 	 * Removes object from DB
 	 */
-	public void remove(Entity entity);
+	public void remove(Object object);
 	
 	/**
 	 * Finishes work with autoassistant

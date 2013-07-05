@@ -10,7 +10,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.autoassistant.model.Car;
-import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
 
@@ -94,7 +93,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	 * Adds new object to DB
 	 */
 	@Override
-	public void add(Entity object) {
+	public void add(Object object) {
 		save(object);
 	}
 
@@ -102,7 +101,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	 * Saves object to DB
 	 */
 	@Override
-	public void save(Entity object) {
+	public void save(Object object) {
 
 		try {
 			Transaction transaction = session.beginTransaction();
@@ -117,7 +116,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	 * Removes object from DB
 	 */
 	@Override
-	public void remove(Entity object) {
+	public void remove(Object object) {
 
 		try {
 			Transaction transaction = session.beginTransaction();

@@ -37,7 +37,6 @@ import javax.swing.event.ListSelectionListener;
 
 import com.autoassistant.model.AutoAssistant;
 import com.autoassistant.model.Car;
-import com.autoassistant.model.Entity;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
 
@@ -161,7 +160,7 @@ public class MainView implements Runnable {
 
 		GridBagConstraints gbc_cbxExpenseCategories = new GridBagConstraints();
 		gbc_cbxExpenseCategories.fill = GridBagConstraints.HORIZONTAL;
-		gbc_cbxExpenseCategories.insets = new Insets(0, 0, 5, 0);		
+		gbc_cbxExpenseCategories.insets = new Insets(0, 0, 5, 0);
 		gbc_cbxExpenseCategories.gridx = 1;
 		gbc_cbxExpenseCategories.gridy = 1;
 		pnlMain.add(cbxExpenseCategories, gbc_cbxExpenseCategories);
@@ -342,9 +341,9 @@ public class MainView implements Runnable {
 		if (expenseCategory != null) {
 			expenses = expenseCategory.getExpenses();
 		}
-		
+
 		((ExpenseTable) tblExpenses.getModel()).setElements(expenses);
-		
+
 		tblExpenses.setAutoCreateRowSorter(true);
 		tblExpenses.getRowSorter().toggleSortOrder(0);
 		tblExpenses.updateUI();
@@ -372,11 +371,11 @@ public class MainView implements Runnable {
 		removeExpenseAction.setEnabled(enabledFlag);
 	}
 
-	private void processAction(Entity entity, ActionType actionType) {
+	private void processAction(Object object, ActionType actionType) {
 		resultLastAction = false;
-		if (entity != null) {
+		if (object != null) {
 			final JDialog dialog = new JDialog(frmAutoAssistant, actionType.getName(), true);
-			final View view = ViewFactory.getView(actionType, entity);
+			final View view = ViewFactory.getView(actionType, object);
 			final JOptionPane optionPane = new JOptionPane(view, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
 			dialog.setContentPane(optionPane);
