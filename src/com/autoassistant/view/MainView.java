@@ -420,7 +420,7 @@ public class MainView implements Runnable {
 	private class AddCategoryAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final ExpenseCategory expenceCategory = new ExpenseCategory(0, "");
+			final ExpenseCategory expenceCategory = new ExpenseCategory();
 			processAction(expenceCategory, ActionType.ADD);
 			if (resultLastAction) {
 				currentCar.addExpenseCategory(expenceCategory);

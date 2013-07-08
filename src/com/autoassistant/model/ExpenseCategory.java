@@ -8,29 +8,20 @@ import java.util.Set;
  */
 public class ExpenseCategory implements Comparable<ExpenseCategory> {
 
-	private String name;
 	private int id;
-	private int autoId;
-	Set<Expense> expenses;
+	private String name;
+	private Set<Expense> expenses;
+	private int autoId;	
 
 	/**
 	 * Creates new expense category for hibernate
 	 */
-	public ExpenseCategory() {}
-	
-	/**
-	 * Creates new expense category with empty expenses list
-	 * 
-	 * @param internal
-	 *            category Id
-	 * @param name
-	 */
-	public ExpenseCategory(int id, String name) {
+	public ExpenseCategory() {
+		id = 0;
+		name = "";
 		expenses = new HashSet<Expense>();
-		this.id = id;
-		this.name = name;		
 	}
-
+	
 	public String getName() {
 		return name;
 	}
