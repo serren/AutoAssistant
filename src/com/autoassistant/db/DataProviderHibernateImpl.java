@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
@@ -25,21 +26,12 @@ import com.autoassistant.model.ExpenseCategory;
  */
 public class DataProviderHibernateImpl implements DataProvider {
 	private static final Logger log = Logger.getLogger(DataProviderHibernateImpl.class);
-
 	private Session session = null;
-	private static DataProviderHibernateImpl instance;
-
-	public static DataProviderHibernateImpl getInstance() {
-		if (instance == null) {
-			instance = new DataProviderHibernateImpl();
-		}
-		return instance;
-	}
 
 	/**
 	 * Creates DB context to work with DB
 	 */
-	private DataProviderHibernateImpl() {
+	public DataProviderHibernateImpl() {
 		Properties prop = new Properties();
 		try {
 			// load a properties file from class path, inside static method
@@ -60,13 +52,13 @@ public class DataProviderHibernateImpl implements DataProvider {
 	 */
 	@Override
 	public void close() {
-		try {
-			if (session != null) {
+		if (session != null) {
+			try {
 				session.flush();
 				session.close();
+			} catch (HibernateException e) {
+				log.error(e);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -76,9 +68,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Car> getCars() {
-		Set<Car> cars = new HashSet<Car>();
-		cars.addAll(session.createQuery("from Car order by id desc").list());
-		return cars;
+		return new HashSet<Car>(session.createQuery("from Car order by id desc").list());
 	}
 
 	/**
@@ -87,9 +77,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<ExpenseCategory> getExpenseCategories(Car car) {
-		Set<ExpenseCategory> expenseCategories = new HashSet<ExpenseCategory>();
-		expenseCategories.addAll(session.createQuery(String.format("from ExpenseCategory where autoid = %s order by name", car.getId())).list());
-		return expenseCategories;
+		return new HashSet<ExpenseCategory>(session.createQuery(String.format("from ExpenseCategory where autoid = %s order by name", car.getId())).list());
 	}
 
 	/**
@@ -98,17 +86,7 @@ public class DataProviderHibernateImpl implements DataProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Expense> getExpenses(ExpenseCategory expenseCategory) {
-		Set<Expense> expenses = new HashSet<Expense>();
-		expenses.addAll(session.createQuery(String.format("from Expense where categoryid = %s order by date", expenseCategory.getId())).list());
-		return expenses;
-	}
-
-	/**
-	 * Adds new object to DB
-	 */
-	@Override
-	public void add(Object object) {
-		save(object);
+		return new HashSet<Expense>(session.createQuery(String.format("from Expense where categoryid = %s order by date", expenseCategory.getId())).list());
 	}
 
 	/**
@@ -116,13 +94,12 @@ public class DataProviderHibernateImpl implements DataProvider {
 	 */
 	@Override
 	public void save(Object object) {
-
+		Transaction transaction = session.beginTransaction();
 		try {
-			Transaction transaction = session.beginTransaction();
 			session.saveOrUpdate(object);
 			transaction.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (HibernateException e) {
+			log.error(e);
 		}
 	}
 
@@ -131,13 +108,12 @@ public class DataProviderHibernateImpl implements DataProvider {
 	 */
 	@Override
 	public void remove(Object object) {
-
+		Transaction transaction = session.beginTransaction();
 		try {
-			Transaction transaction = session.beginTransaction();
 			session.delete(object);
 			transaction.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (HibernateException e) {
+			log.error(e);
 		}
 	}
 }

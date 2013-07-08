@@ -18,11 +18,6 @@ public class AutoAssistantImpl implements AutoAssistant {
 	}
 
 	@Override
-	public void add(Object object) {
-		dataProvider.add(object);
-	}
-
-	@Override
 	public void save(Object object) {
 		dataProvider.save(object);
 	}

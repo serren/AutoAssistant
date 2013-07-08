@@ -21,11 +21,6 @@ public interface DataProvider {
 	public void close();
 	
 	/**
-	 * Adds new object into DB
-	 */
-	public void add(Object object);
-	
-	/**
 	 * Saves edited object into DB
 	 */
 	public void save(Object object);
