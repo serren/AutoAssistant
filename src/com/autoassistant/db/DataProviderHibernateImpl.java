@@ -18,8 +18,6 @@ import org.hibernate.service.ServiceRegistryBuilder;
 
 import com.autoassistant.loader.Loader;
 import com.autoassistant.model.Car;
-import com.autoassistant.model.Expense;
-import com.autoassistant.model.ExpenseCategory;
 
 /**
  * Implements DB methods
@@ -69,24 +67,6 @@ public class DataProviderHibernateImpl implements DataProvider {
 	@Override
 	public Set<Car> getCars() {
 		return new HashSet<Car>(session.createQuery("from Car order by id desc").list());
-	}
-
-	/**
-	 * Loads expense categories list from DB
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Set<ExpenseCategory> getExpenseCategories(Car car) {
-		return new HashSet<ExpenseCategory>(session.createQuery(String.format("from ExpenseCategory where autoid = %s order by name", car.getId())).list());
-	}
-
-	/**
-	 * Loads expenses list from DB
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Set<Expense> getExpenses(ExpenseCategory expenseCategory) {
-		return new HashSet<Expense>(session.createQuery(String.format("from Expense where categoryid = %s order by date", expenseCategory.getId())).list());
 	}
 
 	/**
