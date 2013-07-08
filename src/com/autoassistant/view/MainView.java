@@ -35,14 +35,14 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.autoassistant.model.AutoAssistant;
+import com.autoassistant.db.DataProvider;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
 
 public class MainView implements Runnable {
 
-	private final AutoAssistant autoAssistant;
+	private final DataProvider dataProvider;
 	private Car currentCar;
 	private ExpenseCategory currentExpenseCategory;
 	private Expense currentExpense;
@@ -74,8 +74,8 @@ public class MainView implements Runnable {
 	 * 
 	 * @param dataProvider
 	 */
-	public MainView(AutoAssistant autoAssistant) {
-		this.autoAssistant = autoAssistant;
+	public MainView(DataProvider dataProvider) {
+		this.dataProvider = dataProvider;
 		initialize();
 	}
 
@@ -93,7 +93,7 @@ public class MainView implements Runnable {
 		frmAutoAssistant.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
-				autoAssistant.dispose();
+				dataProvider.close();
 			}
 		});
 		frmAutoAssistant.setTitle("Auto Assistant");
@@ -314,7 +314,7 @@ public class MainView implements Runnable {
 	 */
 	private void showCars() {
 		cbxCars.removeAllItems();
-		for (Car car : autoAssistant.getCars()) {
+		for (Car car : dataProvider.getCars()) {
 			cbxCars.addItem(car);
 		}
 		checkActions();
@@ -411,7 +411,7 @@ public class MainView implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentExpenseCategory, ActionType.EDIT);
 			if (resultLastAction) {
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showExpenseCategories(currentCar);
 			}
 		}
@@ -425,7 +425,7 @@ public class MainView implements Runnable {
 			processAction(expenceCategory, ActionType.ADD);
 			if (resultLastAction) {
 				currentCar.addExpenseCategory(expenceCategory);
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showExpenseCategories(currentCar);
 			}
 		}
@@ -438,7 +438,7 @@ public class MainView implements Runnable {
 			processAction(currentExpenseCategory, ActionType.REMOVE);
 			if (resultLastAction) {
 				currentCar.removeExpenseCategory(currentExpenseCategory);
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showExpenseCategories(currentCar);
 			}
 		}
@@ -451,7 +451,7 @@ public class MainView implements Runnable {
 			final Car car = new Car(0, "", "");
 			processAction(car, ActionType.ADD);
 			if (resultLastAction) {
-				autoAssistant.save(car);
+				dataProvider.save(car);
 				showCars();
 			}
 		}
@@ -463,7 +463,7 @@ public class MainView implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentCar, ActionType.EDIT);
 			if (resultLastAction) {
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showCars();
 			}
 		}
@@ -475,7 +475,7 @@ public class MainView implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentCar, ActionType.REMOVE);
 			if (resultLastAction) {
-				autoAssistant.remove(currentCar);
+				dataProvider.remove(currentCar);
 				showCars();
 			}
 		}
@@ -494,7 +494,7 @@ public class MainView implements Runnable {
 			processAction(expense, ActionType.ADD);
 			if (resultLastAction) {
 				currentExpenseCategory.addExpense(expense);
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showExpenses(currentExpenseCategory);
 
 			}
@@ -507,7 +507,7 @@ public class MainView implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentExpense, ActionType.EDIT);
 			if (resultLastAction) {
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showExpenses(currentExpenseCategory);
 
 			}
@@ -521,7 +521,7 @@ public class MainView implements Runnable {
 			processAction(currentExpense, ActionType.REMOVE);
 			if (resultLastAction) {
 				currentExpenseCategory.removeExpense(currentExpense);
-				autoAssistant.save(currentCar);
+				dataProvider.save(currentCar);
 				showExpenses(currentExpenseCategory);
 			}
 		}
