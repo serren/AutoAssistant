@@ -18,8 +18,7 @@ public class Loader {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		DataProvider dataProvider = DataProviderFactory.getDataProvider("HIBERNATE");
+		final DataProvider dataProvider = DataProviderFactory.getDataProvider("HIBERNATE");
 		EventQueue.invokeLater(new MainView(dataProvider));
 	}
-
 }

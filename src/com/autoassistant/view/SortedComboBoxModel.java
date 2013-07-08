@@ -10,13 +10,6 @@ import javax.swing.DefaultComboBoxModel;
 @SuppressWarnings("serial")
 public class SortedComboBoxModel<E> extends DefaultComboBoxModel<E> {
 
-	/*
-	 * Create an empty model that will use the natural sort order of the item
-	 */
-	public SortedComboBoxModel() {
-		super();
-	}
-
 	@Override
 	public void addElement(E element) {
 		insertElementAt(element, 0);

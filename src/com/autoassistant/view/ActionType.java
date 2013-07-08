@@ -1,7 +1,7 @@
 package com.autoassistant.view;
 
 enum ActionType {
-	CANCEL("Cancel"), ADD("Add"), EDIT("Edit"), REMOVE("Remove");
+	ADD("Add"), EDIT("Edit"), REMOVE("Remove"), CANCEL("Cancel");
 
 	private final String name;
 
