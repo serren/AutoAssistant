@@ -14,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
@@ -56,7 +55,6 @@ public class MainView implements Runnable {
 	// actions
 	private boolean resultLastAction = false;
 
-	private AddCarAction addCarAction;
 	private EditCarAction editCarAction;
 	private RemoveCarAction removeCarAction;
 
@@ -240,72 +238,31 @@ public class MainView implements Runnable {
 		gbc_lblStatus.gridy = 5;
 		pnlMain.add(lblStatus, gbc_lblStatus);
 
+		editCarAction = new EditCarAction();
+		removeCarAction = new RemoveCarAction();
+		addCategoryAction = new AddCategoryAction();
+		editCategoryAction = new EditCategoryAction();
+		removeCategoryAction = new RemoveCategoryAction();
+		addExpenseAction = new AddExpenseAction();
+		editExpenseAction = new EditExpenseAction();
+		removeExpenseAction = new RemoveExpenseAction();
+
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setMargin(new Insets(10, 10, 10, 10));
 		frmAutoAssistant.setJMenuBar(menuBar);
 
-		JMenu mnCar = new JMenu("Car");
-		menuBar.add(mnCar);
-
-		JMenuItem mntmAddCar = new JMenuItem("Add");
-		addCarAction = new AddCarAction();
-		mntmAddCar.setAction(addCarAction);
-		mntmAddCar.setActionCommand("Add");
-		mnCar.add(mntmAddCar);
-
-		JMenuItem mntmEditCar = new JMenuItem("Edit");
-		editCarAction = new EditCarAction();
-		mntmEditCar.setAction(editCarAction);
-		mntmEditCar.setActionCommand("Edit");
-		mnCar.add(mntmEditCar);
-
-		JMenuItem mntmRemoveCar = new JMenuItem("Remove");
-		removeCarAction = new RemoveCarAction();
-		mntmRemoveCar.setAction(removeCarAction);
-		mntmRemoveCar.setActionCommand("Remove");
-		mnCar.add(mntmRemoveCar);
-
-		JMenu mnCategory = new JMenu("Category");
-		menuBar.add(mnCategory);
-
-		JMenuItem mntmAddCategory = new JMenuItem("Add");
-		addCategoryAction = new AddCategoryAction();
-		mntmAddCategory.setAction(addCategoryAction);
-		mntmAddCategory.setActionCommand("Add");
-		mnCategory.add(mntmAddCategory);
-
-		JMenuItem mntmEditCategory = new JMenuItem("Edit");
-		editCategoryAction = new EditCategoryAction();
-		mntmEditCategory.setAction(editCategoryAction);
-		mntmEditCategory.setActionCommand("Edit");
-		mnCategory.add(mntmEditCategory);
-
-		JMenuItem mntmRemoveCategory = new JMenuItem("Remove");
-		removeCategoryAction = new RemoveCategoryAction();
-		mntmRemoveCategory.setAction(removeCategoryAction);
-		mntmRemoveCategory.setActionCommand("Remove");
-		mnCategory.add(mntmRemoveCategory);
-
-		JMenu mnExpense = new JMenu("Expense");
-		menuBar.add(mnExpense);
-
-		JMenuItem mntmAddExpense = new JMenuItem("Add");
-		addExpenseAction = new AddExpenseAction();
-		mntmAddExpense.setAction(addExpenseAction);
-		mntmAddExpense.setActionCommand("Add");
-		mnExpense.add(mntmAddExpense);
-
-		JMenuItem mntmEditExpense = new JMenuItem("Edit");
-		editExpenseAction = new EditExpenseAction();
-		mntmEditExpense.setAction(editExpenseAction);
-		mntmEditExpense.setActionCommand("Edit");
-		mnExpense.add(mntmEditExpense);
-
-		JMenuItem mntmRemoveExpense = new JMenuItem("Remove");
-		removeExpenseAction = new RemoveExpenseAction();
-		mntmRemoveExpense.setAction(removeExpenseAction);
-		mntmRemoveExpense.setActionCommand("Remove");
-		mnExpense.add(mntmRemoveExpense);
+		JMenu mnCar = menuBar.add(new JMenu("Car"));
+		JMenu mnCategory = menuBar.add(new JMenu("Category"));
+		JMenu mnExpense = menuBar.add(new JMenu("Expense"));
+		mnCar.add(new JMenuItem(new AddCarAction()));
+		mnCar.add(new JMenuItem(editCarAction));
+		mnCar.add(new JMenuItem(removeCarAction));
+		mnCategory.add(new JMenuItem(addCategoryAction));
+		mnCategory.add(new JMenuItem(editCategoryAction));
+		mnCategory.add(new JMenuItem(removeCategoryAction));
+		mnExpense.add(new JMenuItem(addExpenseAction));
+		mnExpense.add(new JMenuItem(editExpenseAction));
+		mnExpense.add(new JMenuItem(removeExpenseAction));
 	}
 
 	/**
@@ -336,17 +293,20 @@ public class MainView implements Runnable {
 	 * Fills expenses grid in UI
 	 */
 	private void showExpenses(ExpenseCategory expenseCategory) {
-		Set<Expense> expenses = null;
 		if (expenseCategory != null) {
-			expenses = expenseCategory.getExpenses();
+			((ExpenseTable) tblExpenses.getModel()).setElements(expenseCategory.getExpenses());
+		} else {
+			((ExpenseTable) tblExpenses.getModel()).setElements(null);
 		}
-
-		((ExpenseTable) tblExpenses.getModel()).setElements(expenses);
 
 		tblExpenses.setAutoCreateRowSorter(true);
 		tblExpenses.getRowSorter().toggleSortOrder(0);
 		tblExpenses.updateUI();
-		checkActions();
+
+		// check expenses actions
+		boolean enabledFlag = (cbxExpenseCategories.getItemCount() != 0 && tblExpenses.getRowCount() != 0 && tblExpenses.getSelectedRow() != -1);
+		editExpenseAction.setEnabled(enabledFlag);
+		removeExpenseAction.setEnabled(enabledFlag);
 	}
 
 	/**
@@ -354,18 +314,19 @@ public class MainView implements Runnable {
 	 */
 	private void checkActions() {
 		// check car actions
-		boolean enabledFlag = (cbxCars.getItemCount() != 0);
-		editCarAction.setEnabled(enabledFlag);
-		removeCarAction.setEnabled(enabledFlag);
+		boolean carExists = (cbxCars.getItemCount() > 0);
+		editCarAction.setEnabled(carExists);
+		removeCarAction.setEnabled(carExists);
+		addCategoryAction.setEnabled(carExists);
 
 		// check categories actions
-		enabledFlag = (cbxExpenseCategories.getItemCount() != 0);
-		editCategoryAction.setEnabled(enabledFlag);
-		removeCategoryAction.setEnabled(enabledFlag);
-		addExpenseAction.setEnabled(enabledFlag);
+		boolean categoryExists = (cbxExpenseCategories.getItemCount() > 0);
+		editCategoryAction.setEnabled(categoryExists);
+		removeCategoryAction.setEnabled(categoryExists);
+		addExpenseAction.setEnabled(categoryExists);
 
 		// check expenses actions
-		enabledFlag = (cbxExpenseCategories.getItemCount() != 0 && tblExpenses.getRowCount() != 0 && tblExpenses.getSelectedRow() != -1);
+		boolean enabledFlag = (categoryExists && tblExpenses.getRowCount() != 0 && tblExpenses.getSelectedRow() != -1);
 		editExpenseAction.setEnabled(enabledFlag);
 		removeExpenseAction.setEnabled(enabledFlag);
 	}
@@ -406,6 +367,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class EditCategoryAction extends AbstractAction {
+
+		public EditCategoryAction() {
+			super("Edit");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentExpenseCategory, ActionType.EDIT);
@@ -418,6 +384,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class AddCategoryAction extends AbstractAction {
+
+		public AddCategoryAction() {
+			super("Add");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final ExpenseCategory expenceCategory = new ExpenseCategory();
@@ -432,6 +403,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class RemoveCategoryAction extends AbstractAction {
+
+		public RemoveCategoryAction() {
+			super("Remove");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentExpenseCategory, ActionType.REMOVE);
@@ -445,6 +421,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class AddCarAction extends AbstractAction {
+
+		public AddCarAction() {
+			super("Add");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final Car car = new Car();
@@ -458,6 +439,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class EditCarAction extends AbstractAction {
+
+		public EditCarAction() {
+			super("Edit");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentCar, ActionType.EDIT);
@@ -470,6 +456,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class RemoveCarAction extends AbstractAction {
+
+		public RemoveCarAction() {
+			super("Remove");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentCar, ActionType.REMOVE);
@@ -482,6 +473,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class AddExpenseAction extends AbstractAction {
+
+		public AddExpenseAction() {
+			super("Add");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final Expense expense = new Expense();
@@ -497,6 +493,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class EditExpenseAction extends AbstractAction {
+
+		public EditExpenseAction() {
+			super("Edit");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentExpense, ActionType.EDIT);
@@ -510,6 +511,11 @@ public class MainView implements Runnable {
 
 	@SuppressWarnings("serial")
 	private class RemoveExpenseAction extends AbstractAction {
+
+		public RemoveExpenseAction() {
+			super("Remove");
+		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			processAction(currentExpense, ActionType.REMOVE);
