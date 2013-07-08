@@ -1,5 +1,6 @@
 package com.autoassistant.model;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -17,6 +18,11 @@ public class Expense {
 	private int autoId;
 
 	public Expense() {
+		id = 0;
+		race = 0;
+		expenseDate = Calendar.getInstance().getTime();
+		amount = 0;
+		text = "";
 	}
 
 	public int getId() {

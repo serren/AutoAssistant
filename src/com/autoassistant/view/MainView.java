@@ -14,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Calendar;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
@@ -486,11 +485,6 @@ public class MainView implements Runnable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			final Expense expense = new Expense();
-			expense.setId(0);
-			expense.setRace(0);
-			expense.setExpenseDate(Calendar.getInstance().getTime());
-			expense.setAmount(0d);
-			expense.setText("");
 			processAction(expense, ActionType.ADD);
 			if (resultLastAction) {
 				currentExpenseCategory.addExpense(expense);
