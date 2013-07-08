@@ -1,6 +1,5 @@
 package com.autoassistant.model;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,20 +17,10 @@ public class Car implements Comparable<Car> {
 	 * Create new empty car object for hibernate
 	 */
 	public Car() {
-	}
-
-	/**
-	 * Create new car object with empty expense categories list
-	 * 
-	 * @param Id
-	 * @param Name
-	 * @param Comment
-	 */
-	public Car(int id, String name, String comment) {
 		expenseCategories = new HashSet<ExpenseCategory>();
-		this.id = id;
-		this.name = name;
-		this.comment = comment;
+		id = 0;
+		name = "";
+		comment = "";
 	}
 
 	public String getName() {
@@ -66,47 +55,23 @@ public class Car implements Comparable<Car> {
 		this.expenseCategories = expenseCategories;
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
 
-	/**
-	 * Adds new expense category
-	 * 
-	 * @param expenseCategory
-	 */
 	public void addExpenseCategory(ExpenseCategory expenseCategory) {
 		expenseCategory.setAutoId(id);
 		expenseCategories.add(expenseCategory);
 	}
 
-	/**
-	 * Removes expense category from car
-	 * 
-	 * @param expenseCategory
-	 */
 	public void removeExpenseCategory(ExpenseCategory expenseCategory) {
 		expenseCategories.remove(expenseCategory);
 	}
 
 	@Override
+	public String toString() {
+		return getName();
+	}
+	
+	@Override
 	public int compareTo(Car car) {
 		return getId() - car.getId();
 	}
-	
-	public static Comparator<Car> nameComparator = new Comparator<Car>() {
-
-		public int compare(Car car1, Car car2) {
-
-			String carName1 = car1.getName().toUpperCase();
-			String carName2 = car2.getName().toUpperCase();
-
-			// ascending order
-			return carName1.compareTo(carName2);
-
-			// descending order
-			// return carName2.compareTo(carName1);
-		}
-	};
 }

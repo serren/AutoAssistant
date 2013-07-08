@@ -448,7 +448,7 @@ public class MainView implements Runnable {
 	private class AddCarAction extends AbstractAction {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			final Car car = new Car(0, "", "");
+			final Car car = new Car();
 			processAction(car, ActionType.ADD);
 			if (resultLastAction) {
 				dataProvider.save(car);
