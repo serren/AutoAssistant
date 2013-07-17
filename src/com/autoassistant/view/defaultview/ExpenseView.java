@@ -1,4 +1,4 @@
-package com.autoassistant.view;
+package com.autoassistant.view.defaultview;
 
 import java.awt.Dimension;
 

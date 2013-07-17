@@ -10,14 +10,14 @@ import javax.swing.table.TableModel;
 
 import com.autoassistant.model.Expense;
 
-public class ExpenseTable implements TableModel {
+public class ExpenseTableModel implements TableModel {
 
 	private final Set<TableModelListener> listeners;
 	protected final List<Expense> elements;
 	private final String[] columnNames;
 	private final Class<?>[] columnTypes;
 
-	public ExpenseTable() {
+	public ExpenseTableModel() {
 		listeners = new HashSet<TableModelListener>();
 		elements = new LinkedList<Expense>();
 		columnNames = new String[] { "Date", "Race", "Amount", "Comment" };
@@ -32,9 +32,12 @@ public class ExpenseTable implements TableModel {
 	}
 
 	public Expense getElement(final int index) {
-		return elements.get(index);
+		if (index >= 0) {
+			return elements.get(index);
+		} 
+		return null;
 	}
-	
+			
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch (columnIndex) {

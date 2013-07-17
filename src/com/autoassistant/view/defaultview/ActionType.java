@@ -1,6 +1,6 @@
-package com.autoassistant.view;
+package com.autoassistant.view.defaultview;
 
-enum ActionType {
+public enum ActionType {
 	ADD("Add"), EDIT("Edit"), REMOVE("Remove"), CANCEL("Cancel");
 
 	private final String name;

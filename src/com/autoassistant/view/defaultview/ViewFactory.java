@@ -1,4 +1,4 @@
-package com.autoassistant.view;
+package com.autoassistant.view.defaultview;
 
 import com.autoassistant.model.Car;
 import com.autoassistant.model.Expense;
