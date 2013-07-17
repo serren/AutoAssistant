@@ -37,7 +37,7 @@ import com.autoassistant.db.DataProvider;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.Expense;
 import com.autoassistant.model.ExpenseCategory;
-import com.autoassistant.view.ExpenseTableModel;
+import com.autoassistant.view.TableModelExpenseImpl;
 import com.autoassistant.view.SortedComboBoxModel;
 
 public class MainView implements Runnable {
@@ -207,13 +207,13 @@ public class MainView implements Runnable {
 		scrollPane.setViewportView(tblExpenses);
 
 		// binding the table to the model
-		tblExpenses.setModel(new ExpenseTableModel());
+		tblExpenses.setModel(new TableModelExpenseImpl(null));
 		tblExpenses.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lse) {
 				if (!lse.getValueIsAdjusting()) {
 					final int selectedRow = tblExpenses.getSelectedRow();
 					if (selectedRow != -1) {
-						currentExpense = ((ExpenseTableModel) tblExpenses.getModel()).getElement(selectedRow);
+						currentExpense = (Expense) tblExpenses.getModel().getValueAt(selectedRow, -1);
 					} else {
 						currentExpense = null;
 					}
@@ -295,12 +295,7 @@ public class MainView implements Runnable {
 	 * Fills expenses grid in UI
 	 */
 	private void showExpenses(ExpenseCategory expenseCategory) {
-		if (expenseCategory != null) {
-			((ExpenseTableModel) tblExpenses.getModel()).setElements(expenseCategory.getExpenses());
-		} else {
-			((ExpenseTableModel) tblExpenses.getModel()).setElements(null);
-		}
-
+		tblExpenses.setModel(new TableModelExpenseImpl(expenseCategory != null ? expenseCategory.getExpenses() : null));
 		tblExpenses.setAutoCreateRowSorter(true);
 		tblExpenses.getRowSorter().toggleSortOrder(0);
 		tblExpenses.updateUI();

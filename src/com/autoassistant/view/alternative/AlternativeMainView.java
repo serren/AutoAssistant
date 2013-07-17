@@ -25,7 +25,7 @@ import javax.swing.WindowConstants;
 import com.autoassistant.db.DataProvider;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.ExpenseCategory;
-import com.autoassistant.view.ExpenseTableModel;
+import com.autoassistant.view.TableModelExpenseImpl;
 import com.autoassistant.view.SortedComboBoxModel;
 
 public class AlternativeMainView implements Runnable {
@@ -78,10 +78,7 @@ public class AlternativeMainView implements Runnable {
 		lblCarComment = new JLabel("Car comment", SwingConstants.LEFT);
 		lblStatus = new JLabel("Status");
 
-		tblExpenses = new JTable();
-
-		// binding the table to the model
-		tblExpenses.setModel(new ExpenseTableModel());
+		tblExpenses = new JTable(new TableModelExpenseImpl(null));
 		tblExpenses.getColumnModel().getColumn(0).setResizable(false);
 		tblExpenses.getColumnModel().getColumn(0).setMinWidth(140);
 		tblExpenses.getColumnModel().getColumn(0).setMaxWidth(140);
@@ -152,8 +149,7 @@ public class AlternativeMainView implements Runnable {
 	}
 
 	private void fillExpenses(ExpenseCategory category) {
-		((ExpenseTableModel) tblExpenses.getModel()).setElements(category != null ? category.getExpenses() : null);
-
+		tblExpenses.setModel(new TableModelExpenseImpl(category != null ? category.getExpenses() : null));
 		tblExpenses.setAutoCreateRowSorter(true);
 		tblExpenses.getRowSorter().toggleSortOrder(0);
 		tblExpenses.updateUI();

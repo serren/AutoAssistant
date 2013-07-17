@@ -10,37 +10,28 @@ import javax.swing.table.TableModel;
 
 import com.autoassistant.model.Expense;
 
-public class ExpenseTableModel implements TableModel {
+public class TableModelExpenseImpl implements TableModel {
 
 	private final Set<TableModelListener> listeners;
 	protected final List<Expense> elements;
 	private final String[] columnNames;
 	private final Class<?>[] columnTypes;
 
-	public ExpenseTableModel() {
+	public TableModelExpenseImpl(final Set<Expense> elements) {
 		listeners = new HashSet<TableModelListener>();
-		elements = new LinkedList<Expense>();
+		this.elements = new LinkedList<Expense>();
+		if (elements != null) {
+			this.elements.addAll(elements);
+		}
 		columnNames = new String[] { "Date", "Race", "Amount", "Comment" };
 		columnTypes = new Class[] { Object.class, Integer.class, Double.class, String.class };
 	}
 
-	public void setElements(final Set<Expense> elements) {
-		this.elements.clear();
-		if (elements != null) {
-			this.elements.addAll(elements);
-		}
-	}
-
-	public Expense getElement(final int index) {
-		if (index >= 0) {
-			return elements.get(index);
-		} 
-		return null;
-	}
-			
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch (columnIndex) {
+		case -1:
+			return elements.get(rowIndex);
 		case 0:
 			return elements.get(rowIndex).getExpenseDate();
 		case 1:
