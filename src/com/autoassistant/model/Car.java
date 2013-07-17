@@ -11,7 +11,7 @@ public class Car implements Comparable<Car> {
 	private int id;
 	private String name;
 	private String comment;
-	private Set<ExpenseCategory> expenseCategories;
+	private final Set<ExpenseCategory> expenseCategories;
 
 	/**
 	 * Create new empty car object for hibernate
@@ -51,8 +51,10 @@ public class Car implements Comparable<Car> {
 		return expenseCategories;
 	}
 
-	public void setExpenseCategories(Set<ExpenseCategory> expenseCategories) {
-		this.expenseCategories = expenseCategories;
+	public void setExpenseCategories(final Set<ExpenseCategory> expenseCategories) {
+		this.expenseCategories.clear();
+		if (expenseCategories != null)
+			this.expenseCategories.addAll(expenseCategories);
 	}
 
 
