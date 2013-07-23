@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Set;
@@ -15,6 +16,10 @@ import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
 
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -39,7 +44,7 @@ public class AlternativeMainView implements Runnable {
 	private JComboBox<ExpenseCategory> cbxExpenseCategories;
 	private JTable tblExpenses;
 	private JLabel lblCarComment;
-	private JLabel lblStatus;	
+	private JLabel lblStatus;
 
 	@Override
 	public void run() {
@@ -104,6 +109,42 @@ public class AlternativeMainView implements Runnable {
 		pnlMain.add(new JLabel("Select category:"), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
 		pnlMain.add(lblStatus, new GridBagConstraints(0, 5, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		pnlMain.add(scrollPane, new GridBagConstraints(0, 4, 2, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
+
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setMargin(new Insets(10, 10, 10, 10));
+		frmAutoAssistant.setJMenuBar(menuBar);
+
+		@SuppressWarnings("serial")
+		AbstractAction addAction = new AbstractAction("Add") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.info("Add action");
+			}
+		};
+
+		@SuppressWarnings("serial")
+		AbstractAction editAction = new AbstractAction("Edit") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.info("Edit action");
+			}
+		};
+
+		@SuppressWarnings("serial")
+		AbstractAction deleteAction = new AbstractAction("Delete") {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.info("Delete action");
+			}
+		};
+
+		JMenu operationsMenu = menuBar.add(new JMenu("Operations"));
+		operationsMenu.add(new JMenuItem(addAction));
+		operationsMenu.add(new JMenuItem(editAction));
+		operationsMenu.add(new JMenuItem(deleteAction));
 	}
 
 	private static LayoutManager getPnlMainLayout() {
