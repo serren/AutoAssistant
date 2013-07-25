@@ -1,37 +1,40 @@
 package com.autoassistant.view.alternative;
 
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Set;
 
-import javax.swing.JComboBox;
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import org.apache.log4j.Logger;
-
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
+
+import org.apache.log4j.Logger;
 
 import com.autoassistant.db.DataProvider;
 import com.autoassistant.model.Car;
 import com.autoassistant.model.ExpenseCategory;
 import com.autoassistant.view.TableModelExpenseImpl;
-import com.autoassistant.view.SortedComboBoxModel;
 
 public class AlternativeMainView implements Runnable {
 	private static final Logger log = Logger.getLogger(AlternativeMainView.class);
@@ -39,12 +42,11 @@ public class AlternativeMainView implements Runnable {
 	private DataProvider dataProvider;
 
 	private JFrame frmAutoAssistant;
-
-	private JComboBox<Car> cbxCars;
-	private JComboBox<ExpenseCategory> cbxExpenseCategories;
 	private JTable tblExpenses;
 	private JLabel lblCarComment;
 	private JLabel lblStatus;
+	private JScrollPane paneTree;
+	private JTree tree;
 
 	@Override
 	public void run() {
@@ -62,26 +64,59 @@ public class AlternativeMainView implements Runnable {
 		frmAutoAssistant = new JFrame("Auto Assistant");
 		frmAutoAssistant.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frmAutoAssistant.setBounds(100, 100, 598, 414);
-		frmAutoAssistant.getContentPane().setLayout(new GridLayout(1, 1, 0, 0));
+		frmAutoAssistant.getContentPane().setLayout(new GridLayout(0, 2, 0, 0));
+		
+		paneTree = new JScrollPane();
+		paneTree.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		frmAutoAssistant.getContentPane().add(paneTree);
 
-		cbxCars = new JComboBox<Car>(new SortedComboBoxModel<Car>());
-		cbxCars.addItemListener(new ItemListener() {
+		tree = new JTree();
+		tree.setShowsRootHandles(true);
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			@Override
-			public void itemStateChanged(ItemEvent e) {
-				carChanged((Car) e.getItem());
-			}
-		});
+			public void valueChanged(TreeSelectionEvent e) {
 
-		cbxExpenseCategories = new JComboBox<ExpenseCategory>(new SortedComboBoxModel<ExpenseCategory>());
-		cbxExpenseCategories.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				categoryChanged((ExpenseCategory) e.getItem());
-			}
-		});
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
-		lblCarComment = new JLabel("Car comment", SwingConstants.LEFT);
+				if (node == null)
+					// Nothing is selected.
+							return;
+
+						Object nodeInfo = node.getUserObject();
+
+						if (node.isLeaf() && !node.getAllowsChildren()) {
+							ExpenseCategory category = (ExpenseCategory) nodeInfo;
+							categoryChanged(category);
+						} else if (!node.isRoot()) {
+							Car car = (Car) nodeInfo;
+							carChanged(car);
+						}
+					}
+				});
+		
+		paneTree.setViewportView(tree);
 		lblStatus = new JLabel("Status");
+		
+		JPanel pnlMain = new JPanel();
+		frmAutoAssistant.getContentPane().add(pnlMain);
+		pnlMain.setBorder(UIManager.getBorder("Button.border"));
+		
+		GridBagLayout layout = new GridBagLayout();
+		layout.columnWidths = new int[] {0};
+		layout.columnWeights = new double[] { 1.0 };
+		layout.rowWeights = new double[] { 0.0, 1.0 };
+		layout.rowHeights = new int[] {35, 280};		
+		pnlMain.setLayout(layout);
+		
+		lblCarComment = new JLabel("Car comment", SwingConstants.LEFT);
+		lblCarComment.setVerticalAlignment(SwingConstants.TOP);
+		
+		GridBagConstraints gbc_lblCarComment = new GridBagConstraints();		
+		gbc_lblCarComment.anchor = GridBagConstraints.WEST;
+		gbc_lblCarComment.insets = new Insets(0, 0, 5, 0);
+		gbc_lblCarComment.gridx = 0;
+		gbc_lblCarComment.gridy = 0;		
+		pnlMain.add(lblCarComment, gbc_lblCarComment);		
 
 		tblExpenses = new JTable(new TableModelExpenseImpl(null));
 		tblExpenses.getColumnModel().getColumn(0).setResizable(false);
@@ -92,23 +127,22 @@ public class AlternativeMainView implements Runnable {
 		tblExpenses.getColumnModel().getColumn(2).setResizable(false);
 		tblExpenses.getColumnModel().getColumn(2).setMaxWidth(100);
 		tblExpenses.setRowHeight(20);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(tblExpenses);
-
-		JPanel pnlMain = new JPanel();
-		frmAutoAssistant.getContentPane().add(pnlMain);
-		pnlMain.setBorder(UIManager.getBorder("Button.border"));
-		pnlMain.setLayout(getPnlMainLayout());
-
-		pnlMain.add(cbxCars, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		pnlMain.add(cbxExpenseCategories, new GridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		pnlMain.add(lblCarComment, new GridBagConstraints(0, 2, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
-		pnlMain.add(new JLabel("Expenses:"), new GridBagConstraints(0, 3, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
-		pnlMain.add(new JLabel("Select car:"), new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 5, 5), 0, 0));
-		pnlMain.add(new JLabel("Select category:"), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 5, 0), 0, 0));
-		pnlMain.add(lblStatus, new GridBagConstraints(0, 5, 2, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
-		pnlMain.add(scrollPane, new GridBagConstraints(0, 4, 2, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 5, 0), 0, 0));
+		JScrollPane paneExpenses = new JScrollPane();
+		paneExpenses.setViewportView(tblExpenses);
+		
+		GridBagConstraints gbc_paneExpenses = new GridBagConstraints();
+		gbc_paneExpenses.fill = GridBagConstraints.BOTH;
+		gbc_paneExpenses.anchor = GridBagConstraints.CENTER;
+		gbc_paneExpenses.insets = new Insets(0, 0, 5, 0);
+		gbc_paneExpenses.gridx = 0;
+		gbc_paneExpenses.gridy = 1;		
+		pnlMain.add(paneExpenses, gbc_paneExpenses);
+		
+		GridBagConstraints gbc_lblStatus = new GridBagConstraints();
+		gbc_lblStatus.anchor = GridBagConstraints.WEST;
+		gbc_lblStatus.gridx = 0;
+		gbc_lblStatus.gridy = 2;		
+		pnlMain.add(lblStatus, gbc_lblStatus);	
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setMargin(new Insets(10, 10, 10, 10));
@@ -147,20 +181,10 @@ public class AlternativeMainView implements Runnable {
 		operationsMenu.add(new JMenuItem(deleteAction));
 	}
 
-	private static LayoutManager getPnlMainLayout() {
-		GridBagLayout layout = new GridBagLayout();
-		layout.columnWidths = new int[] { 0, 0 };
-		layout.columnWeights = new double[] { 1.0, 1.0 };
-		layout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 };
-		layout.rowHeights = new int[] { 30, 30, 0, 10, 0, 0 };
-		return layout;
-	}
-
 	private void carChanged(Car car) {
 		if (car != null) {
 			lblCarComment.setText(car.getComment());
 		}
-		fillExpensesCategory(car);
 	}
 
 	private void categoryChanged(ExpenseCategory category) {
@@ -168,25 +192,28 @@ public class AlternativeMainView implements Runnable {
 	}
 
 	private void fillCars() {
-		cbxCars.removeAllItems();
 		final Set<Car> cars = dataProvider.getCars();
+
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Cars");
 		if (cars != null) {
 			for (Car car : cars) {
-				cbxCars.addItem(car);
-			}
-		}
-	}
+				DefaultMutableTreeNode carNode = new DefaultMutableTreeNode(car);
+				carNode.setAllowsChildren(true);
+				rootNode.add(carNode);
 
-	private void fillExpensesCategory(final Car car) {
-		cbxExpenseCategories.removeAllItems();
-		if (car != null) {
-			Set<ExpenseCategory> expenseCategories = car.getExpenseCategories();
-			if (expenseCategories != null) {
-				for (ExpenseCategory expenseCategory : expenseCategories) {
-					cbxExpenseCategories.addItem(expenseCategory);
+				Set<ExpenseCategory> expenseCategories = car.getExpenseCategories();
+
+				if (expenseCategories != null) {
+					for (ExpenseCategory expenseCategory : expenseCategories) {
+						DefaultMutableTreeNode categoryNode = new DefaultMutableTreeNode(expenseCategory);
+						categoryNode.setAllowsChildren(false);
+						carNode.add(categoryNode);
+					}
 				}
 			}
 		}
+		tree.setModel(new DefaultTreeModel(rootNode));
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 
 	private void fillExpenses(ExpenseCategory category) {
